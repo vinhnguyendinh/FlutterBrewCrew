@@ -75,13 +75,26 @@ class _SignInState extends State<SignIn> {
         });
       },
       decoration: textFormDecoration.copyWith(hintText: 'Enter email'),
-      validator: (val) => val.isEmpty ? 'Please enter email' : null,
+      validator: (val) {
+        if (val.isEmpty) {
+          return 'Please enter email';
+        }
+
+        bool emailValid = RegExp(
+                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+            .hasMatch(val);
+        if (!emailValid) {
+          return 'Email not valid. Please re-check';
+        }
+
+        return null;
+      },
     );
   }
 
   _passwordForm() {
     return TextFormField(
-      initialValue: '',
+      obscureText: true,
       onChanged: (value) {
         setState(() {
           _currentPassword = value;

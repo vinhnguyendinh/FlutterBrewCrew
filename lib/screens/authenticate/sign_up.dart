@@ -73,20 +73,55 @@ class _SignUpState extends State<SignUp> {
 
   _emailForm() {
     return TextFormField(
-      initialValue: '',
       onChanged: (value) {
         setState(() {
           _currentEmail = value;
         });
       },
       decoration: textFormDecoration.copyWith(hintText: 'Enter email'),
-      validator: (val) => val.isEmpty ? 'Please enter email' : null,
+      validator: (val) {
+        if (val.isEmpty) {
+          return 'Please enter email';
+        }
+
+        bool emailValid = RegExp(
+                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+            .hasMatch(val);
+        if (!emailValid) {
+          return 'Email not valid. Please re-check';
+        }
+
+        return null;
+      },
+    );
+  }
+
+  _passwordForm() {
+    return TextFormField(
+      obscureText: true,
+      onChanged: (value) {
+        setState(() {
+          _currentPassword = value;
+        });
+      },
+      decoration: textFormDecoration.copyWith(hintText: 'Enter password'),
+      validator: (val) {
+        if (val.isEmpty) {
+          return 'Please enter password';
+        }
+
+        if (_currentPassword != _currentConfirmPassword) {
+          return 'Password and confirmed password not matched.';
+        }
+
+        return null;
+      },
     );
   }
 
   _confirmPasswordForm() {
     return TextFormField(
-      initialValue: '',
+      obscureText: true,
       onChanged: (value) {
         setState(() {
           _currentConfirmPassword = value;
@@ -94,20 +129,17 @@ class _SignUpState extends State<SignUp> {
       },
       decoration:
           textFormDecoration.copyWith(hintText: 'Enter confirmed password'),
-      validator: (val) => val.isEmpty ? 'Please enter same password' : null,
-    );
-  }
+      validator: (val) {
+        if (val.isEmpty) {
+          return 'Please enter confirmed password';
+        }
 
-  _passwordForm() {
-    return TextFormField(
-      initialValue: '',
-      onChanged: (value) {
-        setState(() {
-          _currentPassword = value;
-        });
+        if (_currentPassword != _currentConfirmPassword) {
+          return 'Password and confirmed password not matched.';
+        }
+
+        return null;
       },
-      decoration: textFormDecoration.copyWith(hintText: 'Enter password'),
-      validator: (val) => val.isEmpty ? 'Please enter password' : null,
     );
   }
 
