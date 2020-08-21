@@ -43,21 +43,24 @@ class _SignInState extends State<SignIn> {
   }
 
   _body() {
-    return Form(
-      key: _formKey,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
-        child: Column(
-          children: [
-            SizedBox(height: 40),
-            _emailForm(),
-            SizedBox(height: 20),
-            _passwordForm(),
-            SizedBox(height: 20),
-            _signInButton(),
-            SizedBox(height: 10),
-            _signUpButton(),
-          ],
+    return SingleChildScrollView(
+      child: Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: 40),
+              _emailForm(),
+              SizedBox(height: 20),
+              _passwordForm(),
+              SizedBox(height: 20),
+              _signInButton(),
+              SizedBox(height: 10),
+              _signUpButton(),
+            ],
+          ),
         ),
       ),
     );
