@@ -18,8 +18,10 @@ class _AuthenticateState extends State<Authenticate> {
 
   @override
   Widget build(BuildContext context) {
-    return _isShowSignIn
-        ? SignIn(switchShowSignIn: switchShowSignIn)
-        : SignUp(switchShowSignIn: switchShowSignIn);
+    if (_isShowSignIn) {
+      return SignIn(switchShowSignIn: switchShowSignIn);
+    } else {
+      return SignUp(switchShowSignIn: switchShowSignIn);
+    }
   }
 }

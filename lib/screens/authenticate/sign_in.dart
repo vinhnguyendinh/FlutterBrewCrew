@@ -1,3 +1,5 @@
+import 'package:brew_crew/models/user.dart';
+import 'package:brew_crew/services/auth_service.dart';
 import 'package:brew_crew/utils/constant.dart';
 import 'package:flutter/material.dart';
 
@@ -16,11 +18,13 @@ class _SignInState extends State<SignIn> {
 
   final _formKey = GlobalKey<FormState>();
 
+  final _authService = AuthService();
+
   // MARK: - Actions
-  _signInButtonClicked() {
+  _signInButtonClicked() async {
     if (_formKey.currentState.validate()) {
-      print(_currentEmail);
-      print(_currentPassword);
+      await _authService.handleSignInEmail(
+          email: _currentEmail, password: _currentPassword);
     }
   }
 

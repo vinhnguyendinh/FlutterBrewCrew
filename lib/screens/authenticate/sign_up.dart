@@ -1,3 +1,5 @@
+import 'package:brew_crew/models/user.dart';
+import 'package:brew_crew/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:brew_crew/utils/constant.dart';
 import 'package:flutter/rendering.dart';
@@ -18,15 +20,17 @@ class _SignUpState extends State<SignUp> {
 
   final _formKey = GlobalKey<FormState>();
 
+  final _authService = AuthService();
+
   // MARK: - Actions
   _signInButtonClicked() {
     this.widget.switchShowSignIn();
   }
 
-  _registerButtonClicked() {
+  _registerButtonClicked() async {
     if (_formKey.currentState.validate()) {
-      print(_currentEmail);
-      print(_currentPassword);
+      await _authService.handleSignUp(
+          email: _currentEmail, password: _currentPassword);
     }
   }
 
@@ -61,9 +65,9 @@ class _SignUpState extends State<SignUp> {
               SizedBox(height: 20),
               _confirmPasswordForm(),
               SizedBox(height: 20),
-              _signInButton(),
+              _registerButton(),
               SizedBox(height: 10),
-              _signUpButton(),
+              _switchSignInButton(),
             ],
           ),
         ),
@@ -143,7 +147,7 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  _signInButton() {
+  _registerButton() {
     return ButtonTheme(
       minWidth: 130,
       height: 45,
@@ -157,7 +161,7 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  _signUpButton() {
+  _switchSignInButton() {
     return ButtonTheme(
       minWidth: 130,
       height: 45,
