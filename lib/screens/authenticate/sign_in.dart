@@ -1,6 +1,7 @@
 import 'package:brew_crew/models/user.dart';
 import 'package:brew_crew/services/auth_service.dart';
 import 'package:brew_crew/utils/constant.dart';
+import 'package:brew_crew/utils/loading/loading.dart';
 import 'package:flutter/material.dart';
 
 class SignIn extends StatefulWidget {
@@ -20,11 +21,20 @@ class _SignInState extends State<SignIn> {
 
   final _authService = AuthService();
 
+  bool _isLoading = false;
+
   // MARK: - Actions
   _signInButtonClicked() async {
     if (_formKey.currentState.validate()) {
+      this.setState(() {
+        _isLoading = true;
+      });
       await _authService.handleSignInEmail(
           email: _currentEmail, password: _currentPassword);
+
+      this.setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -47,27 +57,30 @@ class _SignInState extends State<SignIn> {
   }
 
   _body() {
-    return SingleChildScrollView(
-      child: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(height: 40),
-              _emailForm(),
-              SizedBox(height: 20),
-              _passwordForm(),
-              SizedBox(height: 20),
-              _signInButton(),
-              SizedBox(height: 10),
-              _signUpButton(),
-            ],
-          ),
-        ),
-      ),
-    );
+    return _isLoading
+        ? Loading()
+        : SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 40),
+                    _emailForm(),
+                    SizedBox(height: 20),
+                    _passwordForm(),
+                    SizedBox(height: 20),
+                    _signInButton(),
+                    SizedBox(height: 10),
+                    _signUpButton(),
+                  ],
+                ),
+              ),
+            ),
+          );
   }
 
   _emailForm() {

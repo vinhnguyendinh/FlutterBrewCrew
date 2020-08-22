@@ -1,5 +1,6 @@
 import 'package:brew_crew/models/user.dart';
 import 'package:brew_crew/services/auth_service.dart';
+import 'package:brew_crew/services/brew_service.dart';
 import 'package:flutter/material.dart';
 import 'package:brew_crew/utils/constant.dart';
 import 'package:flutter/rendering.dart';
@@ -29,8 +30,13 @@ class _SignUpState extends State<SignUp> {
 
   _registerButtonClicked() async {
     if (_formKey.currentState.validate()) {
-      await _authService.handleSignUp(
+      UserModel user = await _authService.handleSignUp(
           email: _currentEmail, password: _currentPassword);
+
+      if (user != null) {
+        await BrewService(uid: user.uid)
+            .updateBrew(name: 'New user', sugars: '0', strength: 100);
+      }
     }
   }
 
