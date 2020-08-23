@@ -1,4 +1,5 @@
 import 'package:brew_crew/main.dart';
+import 'package:brew_crew/screens/home/brew_item.dart';
 import 'package:brew_crew/services/brew_service.dart';
 import 'package:brew_crew/utils/loading/loading.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,8 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final _authService = AuthService();
 
+  List<Brew> _brewList = [];
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<Brew>>(
@@ -26,9 +29,8 @@ class _HomeState extends State<Home> {
           return Loading();
         }
 
-        snapshot.data.forEach((brew) {
-          print(brew.name);
-        });
+        // Update brew list
+        _brewList = snapshot.data;
 
         return Scaffold(
           appBar: AppBar(
@@ -79,8 +81,11 @@ class _HomeState extends State<Home> {
   }
 
   _body() {
-    return Column(
-      children: [],
+    return ListView.builder(
+      itemCount: _brewList.length,
+      itemBuilder: (context, index) {
+        return BrewItem(brew: _brewList[index]);
+      },
     );
   }
 }

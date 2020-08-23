@@ -24,10 +24,10 @@ class AuthService {
       UserCredential user = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
       return _createUserFromUserCredential(user.user);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
+    } catch (err) {
+      if (err.code == 'user-not-found') {
         print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
+      } else if (err.code == 'wrong-password') {
         print('Wrong password provided for that user.');
       }
       return null;

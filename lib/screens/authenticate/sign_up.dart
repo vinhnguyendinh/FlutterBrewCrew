@@ -4,6 +4,7 @@ import 'package:brew_crew/services/brew_service.dart';
 import 'package:flutter/material.dart';
 import 'package:brew_crew/utils/constant.dart';
 import 'package:flutter/rendering.dart';
+import 'package:brew_crew/utils/loading/loading.dart';
 
 class SignUp extends StatefulWidget {
   Function switchShowSignIn;
@@ -19,42 +20,31 @@ class _SignUpState extends State<SignUp> {
   String _currentPassword = '';
   String _currentConfirmPassword = '';
 
+  String _errorMessage = '';
+  bool _isLoading = false;
+
   final _formKey = GlobalKey<FormState>();
 
   final _authService = AuthService();
 
-  // MARK: - Actions
-  _signInButtonClicked() {
-    this.widget.switchShowSignIn();
-  }
-
-  _registerButtonClicked() async {
-    if (_formKey.currentState.validate()) {
-      UserModel user = await _authService.handleSignUp(
-          email: _currentEmail, password: _currentPassword);
-
-      if (user != null) {
-        await BrewService(uid: user.uid)
-            .updateBrew(name: 'New user', sugars: '0', strength: 100);
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.brown[100],
-      // resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: Text('Brew Crew Sign Up'),
-        centerTitle: true,
-        backgroundColor: Colors.brown[400],
-        elevation: 0,
-      ),
-      body: _body(),
-    );
+    return _isLoading
+        ? Loading()
+        : Scaffold(
+            backgroundColor: Colors.brown[100],
+            // resizeToAvoidBottomInset: false,
+            appBar: AppBar(
+              title: Text('Brew Crew Sign Up'),
+              centerTitle: true,
+              backgroundColor: Colors.brown[400],
+              elevation: 0,
+            ),
+            body: _body(),
+          );
   }
 
+  // Body widget
   _body() {
     return SingleChildScrollView(
       child: Form(
@@ -74,6 +64,12 @@ class _SignUpState extends State<SignUp> {
               _registerButton(),
               SizedBox(height: 10),
               _switchSignInButton(),
+              SizedBox(height: 20),
+              Text(
+                _errorMessage,
+                style: TextStyle(color: Colors.red, fontSize: 15),
+                textAlign: TextAlign.center,
+              )
             ],
           ),
         ),
@@ -81,8 +77,10 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
+  // Email form widget
   _emailForm() {
     return TextFormField(
+      initialValue: _currentEmail,
       onChanged: (value) {
         setState(() {
           _currentEmail = value;
@@ -106,8 +104,10 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
+  // Password widget
   _passwordForm() {
     return TextFormField(
+      initialValue: _currentPassword,
       obscureText: true,
       onChanged: (value) {
         setState(() {
@@ -129,8 +129,10 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
+  // Confirm password widget
   _confirmPasswordForm() {
     return TextFormField(
+      initialValue: _currentConfirmPassword,
       obscureText: true,
       onChanged: (value) {
         setState(() {
@@ -153,6 +155,7 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
+  // Register button widget
   _registerButton() {
     return ButtonTheme(
       minWidth: 130,
@@ -167,6 +170,7 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
+  // Switch to sign in widget
   _switchSignInButton() {
     return ButtonTheme(
       minWidth: 130,
@@ -179,5 +183,39 @@ class _SignUpState extends State<SignUp> {
         onPressed: _signInButtonClicked,
       ),
     );
+  }
+
+  // MARK: - Actions
+  _signInButtonClicked() {
+    this.widget.switchShowSignIn();
+  }
+
+  _registerButtonClicked() async {
+    if (_formKey.currentState.validate()) {
+      // Show loading
+      this.setState(() {
+        _isLoading = true;
+      });
+
+      // Sign up with email and password
+      UserModel user = await _authService.handleSignUp(
+          email: _currentEmail, password: _currentPassword);
+
+      // Hide loading
+      if (user != null) {
+        await BrewService(uid: user.uid)
+            .updateBrew(name: 'New user', sugars: '0', strength: 100);
+        this.setState(() {
+          _errorMessage = '';
+          _isLoading = false;
+        });
+      } else {
+        this.setState(() {
+          _errorMessage =
+              'Authentication failed. Please check email and password.';
+          _isLoading = false;
+        });
+      }
+    }
   }
 }
