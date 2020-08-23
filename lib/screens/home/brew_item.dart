@@ -13,6 +13,7 @@ class BrewItem extends StatelessWidget {
       child: Card(
         child: ListTile(
           leading: CircleAvatar(
+            backgroundImage: AssetImage('assets/coffee_icon.png'),
             backgroundColor: Colors.brown[brew.strength],
             radius: 30,
           ),

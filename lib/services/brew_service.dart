@@ -20,6 +20,15 @@ class BrewService {
     }).toList();
   }
 
+  Brew _createBrewFromDocumentSnapshot(DocumentSnapshot snapshot) {
+    final data = snapshot.data();
+    return Brew(
+      name: data['name'] ?? '',
+      sugars: data['sugars'] ?? '0',
+      strength: data['strength'] ?? 100,
+    );
+  }
+
   // Update brew
   Future<void> updateBrew({String name, String sugars, int strength}) {
     return brewCollectionRef
@@ -34,5 +43,13 @@ class BrewService {
   // Stream get brews
   Stream<List<Brew>> get brews {
     return brewCollectionRef.snapshots().map(_createBrewListFromQuerySnapshot);
+  }
+
+  // Stream get brew with uid
+  Stream<Brew> get brewData {
+    return brewCollectionRef
+        .doc(uid)
+        .snapshots()
+        .map(_createBrewFromDocumentSnapshot);
   }
 }

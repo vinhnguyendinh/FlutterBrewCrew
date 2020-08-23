@@ -1,51 +1,38 @@
-import 'package:brew_crew/main.dart';
-import 'package:brew_crew/screens/home/brew_item.dart';
+import 'package:brew_crew/screens/home/brew_list.dart';
+import 'package:brew_crew/screens/home/settings_brew.dart';
 import 'package:brew_crew/services/brew_service.dart';
-import 'package:brew_crew/utils/loading/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:brew_crew/services/auth_service.dart';
 import 'package:brew_crew/models/brew.dart';
+import 'package:provider/provider.dart';
 
-class Home extends StatefulWidget {
-  @override
-  _HomeState createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
+class Home extends StatelessWidget {
   final _authService = AuthService();
-
-  List<Brew> _brewList = [];
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<Brew>>(
-      stream: BrewService().brews,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Text('Something went wrong');
-        }
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Loading();
-        }
-
-        // Update brew list
-        _brewList = snapshot.data;
-
-        return Scaffold(
-          appBar: AppBar(
-            title: Text('Brew Crew'),
-            centerTitle: false,
-            backgroundColor: Colors.brown[400],
-            elevation: 0,
-            actions: [
-              _settingButton(),
-              _logoutButton(),
-            ],
-          ),
-          body: _body(),
-        );
-      },
+    return StreamProvider<List<Brew>>.value(
+      value: BrewService().brews,
+      child: Scaffold(
+        backgroundColor: Colors.brown[40],
+        appBar: AppBar(
+          title: Text('Brew Crew'),
+          centerTitle: false,
+          backgroundColor: Colors.brown[400],
+          elevation: 0,
+          actions: [
+            _settingButton(context),
+            _logoutButton(),
+          ],
+        ),
+        body: Container(
+            decoration: BoxDecoration(
+                image: DecorationImage(
+              image: AssetImage('assets/coffee_bg.png'),
+              fit: BoxFit.cover,
+            )),
+            child: BrewList()),
+      ),
     );
   }
 
@@ -66,9 +53,18 @@ class _HomeState extends State<Home> {
     );
   }
 
-  _settingButton() {
+  _settingButton(BuildContext context) {
     return FlatButton.icon(
-      onPressed: () async {},
+      onPressed: () {
+        showModalBottomSheet(
+            context: context,
+            builder: (context) {
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                child: SettingsBrew(),
+              );
+            });
+      },
       icon: Icon(
         Icons.settings,
         color: Colors.white,
@@ -77,15 +73,6 @@ class _HomeState extends State<Home> {
         'Settings',
         style: TextStyle(color: Colors.white),
       ),
-    );
-  }
-
-  _body() {
-    return ListView.builder(
-      itemCount: _brewList.length,
-      itemBuilder: (context, index) {
-        return BrewItem(brew: _brewList[index]);
-      },
     );
   }
 }
